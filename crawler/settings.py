@@ -1,19 +1,30 @@
-# Scrapy settings for crawler project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://docs.scrapy.org/en/latest/topics/settings.html
-#     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+#!/usr/bin/env python
+
+"""
+Scrapy settings for the crawler
+
+"""
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BOT_NAME = 'AuditSpider'
-
 SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'Blackhawk Network Europe - HawkSense - The Data Science Digital Platform'
+USER_AGENT_CHOICES = [
+    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:23.0) Gecko/20100101 Firefox/23.0',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36',
+    'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64; rv:24.0) Gecko/20140205 Firefox/24.0 Iceweasel/24.3.0',
+    'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0',
+    'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) AppleWebKit/534.57.2 (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2',
+]
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -66,9 +77,15 @@ DOWNLOAD_DELAY = 1
 # UVICORN_CONFIG = {"host": "0.0.0.0"}
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#     'crawler.pipelines.CrawlerPipeline': 300,
-# }
+ITEM_PIPELINES = {'crawler.pipelines.DBPipeline': 100}
+DATABASE = {
+    'drivername': os.getenv("DATABASE_DRIVERNAME"),
+    'host': os.getenv("DATABASE_HOST"),
+    'port': os.getenv("DATABASE_PORT"),
+    'username': os.getenv("DATABASE_USER'"),
+    'password': os.getenv("DATABASE_PASSWORD"),
+    'database': os.getenv("DATABASE_DB'")
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
