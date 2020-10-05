@@ -122,15 +122,14 @@ class CanonicalLink(DeclarativeBase):
 #     external = Column('external', CHAR)  # unigram, bigram or trigram
 
 
-# class InLink(DeclarativeBase):
-#     """Sqlalchemy model"""
-#     __tablename__ = "in_links"
-#     __table_args__ = {"schema": "crawl"}
-#
-#     # setting up the table definition
-#     id = Column('id', Integer, primary_key=True, nullable=False)
-#     date_created = Column('date_created', DateTime(timezone=True), server_default=func.now())
-#     href = Column('href', Text)
-#     href_domain = Column('href_domain', Text)
-#     url = Column('url', Text)
-#     domain = Column('domain', Text)
+class InLink(DeclarativeBase):
+    """Sqlalchemy model"""
+    __tablename__ = "in_links"
+    __table_args__ = {"schema": "crawl"}
+
+    # setting up the table definition
+    id = Column('id', Integer, primary_key=True, nullable=False)
+    date_created = Column('date_created', DateTime(timezone=True), server_default=func.now())
+    url = Column('url', Text)
+    domain = Column('domain', Text)
+    href = Column('href', Text)

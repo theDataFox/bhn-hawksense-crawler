@@ -88,12 +88,15 @@ class AuditSpider(CrawlSpider):
         # out_links and external links
         links = response.xpath("//a")
         for link in links:
-            out_link_item = OutLinkItem()
-            out_link_item['url'] = url
-            out_link_item['domain'] = domain
-            out_link_item['href'], out_link_item['href_domain'], out_link_item['external'] = self.parse_out_link_item(
-                link=link, response=response)
-            yield out_link_item
+            # remove # links from process
+            if not link.attrib['href'].startswith(r'#'):
+                out_link_item = OutLinkItem()
+                out_link_item['url'] = url
+                out_link_item['domain'] = domain
+                out_link_item['href'], out_link_item['href_domain'], out_link_item[
+                    'external'] = self.parse_out_link_item(
+                    link=link, response=response)
+                yield out_link_item
 
         # canonical links
         canonical_links = response.xpath("//link[@rel='canonical' and @href]")
@@ -101,8 +104,8 @@ class AuditSpider(CrawlSpider):
             canonical_link_item = CanonicalLinkItem()
             canonical_link_item['url'] = url
             canonical_link_item['domain'] = domain
-            canonical_link_item['href'], canonical_link_item['self'] = self.parse_canonical_link_item(link=link,
-                                                                                                      response=response)
+            canonical_link_item['href'], \
+            canonical_link_item['self_ref'] = self.parse_canonical_link_item(link=link, response=response)
             yield canonical_link_item
 
         yield page_item
@@ -181,21 +184,29 @@ class AuditSpider(CrawlSpider):
         """
         parses the ahrefs and collects the attr of each link
         """
-        url = response.url
-        href = link.attrib['href']
 
-        if href.startswith('/') or href.startswith('#'):
-            href_domain = custom_cache_extract(url)[1]
+        url = response.url
+        uri = urlparse(url)
+        # use href here unless condition below applies
+        href = link.attrib['href']
+        href_domain = ''
+        external = False
+        if href == r'/':
+            # href = homepage
+            href = f'{uri.scheme}://{uri.netloc}/'
+            href_domain = custom_cache_extract(url).registered_domain
+            external = False
+        elif href.startswith('/'):
+            # create absolute
+            href = f'{uri.scheme}://{uri.netloc}/{href[1:]}'
+            href_domain = custom_cache_extract(url).registered_domain
             external = False
         elif custom_cache_extract(href)[1] != custom_cache_extract(url)[1]:
-            href_domain = custom_cache_extract(href)[1]
+            href_domain = custom_cache_extract(href).registered_domain
             external = True
         elif custom_cache_extract(href)[0] != custom_cache_extract(url)[0]:
-            href_domain = custom_cache_extract(href)[1]
+            href_domain = custom_cache_extract(href).registered_domain
             external = True
-        else:
-            href_domain = custom_cache_extract(url)[1]
-            external = False
 
         return href, href_domain, external
 

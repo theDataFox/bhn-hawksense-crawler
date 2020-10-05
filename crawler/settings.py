@@ -6,9 +6,9 @@ Scrapy settings for the crawler
 """
 import os
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
 BOT_NAME = 'AuditSpider'
 SPIDER_MODULES = ['crawler.spiders']
@@ -82,7 +82,7 @@ DATABASE = {
     'drivername': os.getenv("DATABASE_DRIVERNAME"),
     'host': os.getenv("DATABASE_HOST"),
     'port': os.getenv("DATABASE_PORT"),
-    'username': os.getenv("DATABASE_USER'"),
+    'username': os.getenv("DATABASE_USER"),
     'password': os.getenv("DATABASE_PASSWORD"),
     'database': os.getenv("DATABASE_DB'")
 }
