@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, Column, Text, Integer, Boolean, ARRAY, REA
 from sqlalchemy.engine import url
 from sqlalchemy.ext.declarative import declarative_base
 
-DeclarativeBase = declarative_base()
+Base = declarative_base()
 
 
 def connect_to_db():
@@ -22,10 +22,10 @@ def connect_to_db():
 
 def create_table(engine):
     """Constructing a base class for declarative class definitions (ORM)."""
-    DeclarativeBase.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
 
 
-class Page(DeclarativeBase):
+class Page(Base):
     """Sqlalchemy model"""
     __tablename__ = "page"
     __table_args__ = {"schema": "crawl"}
@@ -64,7 +64,7 @@ class Page(DeclarativeBase):
     embeds = Column('embed_list', ARRAY(Text))
 
 
-class Image(DeclarativeBase):
+class Image(Base):
     """Sqlalchemy model"""
     __tablename__ = "images"
     __table_args__ = {"schema": "crawl"}
@@ -79,7 +79,7 @@ class Image(DeclarativeBase):
     domain = Column('domain', Text)
 
 
-class OutLink(DeclarativeBase):
+class OutLink(Base):
     """Sqlalchemy model"""
     __tablename__ = "out_links"
     __table_args__ = {"schema": "crawl"}
@@ -95,7 +95,7 @@ class OutLink(DeclarativeBase):
     external = Column('external', Boolean)  # external or out_link within same domain
 
 
-class CanonicalLink(DeclarativeBase):
+class CanonicalLink(Base):
     """Sqlalchemy model"""
     __tablename__ = "canonical_links"
     __table_args__ = {"schema": "crawl"}
@@ -108,7 +108,8 @@ class CanonicalLink(DeclarativeBase):
     domain = Column('domain', Text)
     self_ref = Column('self_ref', Boolean)  # self-referencing or canonicalised
 
-# class Phrase(DeclarativeBase):
+
+# class Phrase(Base):
 #     """Sqlalchemy model"""
 #     __tablename__ = "seo_phrases"
 #     __table_args__ = {"schema": "crawl"}
@@ -122,7 +123,7 @@ class CanonicalLink(DeclarativeBase):
 #     external = Column('external', CHAR)  # unigram, bigram or trigram
 
 
-class InLink(DeclarativeBase):
+class InLink(Base):
     """Sqlalchemy model"""
     __tablename__ = "in_links"
     __table_args__ = {"schema": "crawl"}
@@ -131,5 +132,4 @@ class InLink(DeclarativeBase):
     id = Column('id', Integer, primary_key=True, nullable=False)
     date_created = Column('date_created', DateTime(timezone=True), server_default=func.now())
     url = Column('url', Text)
-    domain = Column('domain', Text)
-    href = Column('href', Text)
+    in_link = Column('in_link', Text)

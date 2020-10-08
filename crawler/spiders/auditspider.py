@@ -4,7 +4,6 @@
 Constructs the crawling AuditSpider class
 """
 import hashlib
-import json
 import os
 import re
 import string
@@ -21,7 +20,7 @@ from nltk.util import ngrams
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
-from crawler.items import PageItem, ImageItem, OutLinkItem, CanonicalLinkItem
+from ..items import PageItem, ImageItem, OutLinkItem, CanonicalLinkItem
 
 nltk.download('stopwords')
 nltk.download('punkt')
@@ -31,16 +30,15 @@ stop_list = set(stopwords.words('english'))
 custom_cache_extract = tldextract.TLDExtract(cache_file=False)
 
 
+# noinspection PyAbstractClass
 class AuditSpider(CrawlSpider):
-    def parse(self, response, **kwargs):
-        pass
-
     name = "AuditSpider"
-    rules = [Rule(LinkExtractor(), callback='parse_item', follow=True)]
 
-    def __init__(self, *a, **kw):
-        super().__init__(*a, **kw)
+    def __init__(self, denied_paths, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.allowed_domains = [custom_cache_extract(self.start_urls[0]).registered_domain]
+        AuditSpider.rules = [Rule(LinkExtractor(deny=denied_paths), callback='parse_item', follow=True)]
+        super(AuditSpider, self)._compile_rules()
 
     def parse_item(self, response):
         """
@@ -69,7 +67,7 @@ class AuditSpider(CrawlSpider):
             'word_count'], page_item[
             'text_ratio'], page_item[
             'content_hash'] = self.parse_text(response)
-        page_item['content_length'] = response.headers.get('content-length')
+        page_item['content_length'] = len(response.body)
         page_item['iframes'] = response.xpath("//iframe/@src").getall()
         page_item['objects'] = response.xpath("//object/@data").getall()
         page_item['embeds'] = response.xpath("//embed/@src").getall()
@@ -89,14 +87,17 @@ class AuditSpider(CrawlSpider):
         links = response.xpath("//a")
         for link in links:
             # remove # links from process
-            if not link.attrib['href'].startswith(r'#'):
-                out_link_item = OutLinkItem()
-                out_link_item['url'] = url
-                out_link_item['domain'] = domain
-                out_link_item['href'], out_link_item['href_domain'], out_link_item[
-                    'external'] = self.parse_out_link_item(
-                    link=link, response=response)
-                yield out_link_item
+            try:
+                if not link.attrib['href'].startswith(r'#'):
+                    out_link_item = OutLinkItem()
+                    out_link_item['url'] = url
+                    out_link_item['domain'] = domain
+                    out_link_item['href'], out_link_item['href_domain'], out_link_item[
+                        'external'] = self.parse_out_link_item(
+                        link=link, response=response)
+                    yield out_link_item
+            except KeyError:
+                pass
 
         # canonical links
         canonical_links = response.xpath("//link[@rel='canonical' and @href]")
@@ -150,10 +151,15 @@ class AuditSpider(CrawlSpider):
         """
         Gather h1 info
         """
-        h1_tags = response.xpath('//h1/text()').getall()
+        h1_tags = response.xpath('//h1/descendant-or-self::*/text()').getall()
+        h1_text = []
         h1_len = []
         for h1 in h1_tags:
-            h1_len.append(len(h1))
+            if str.isspace(h1):
+                continue
+            else:
+                h1_text.append(h1)
+                h1_len.append(len(h1))
 
         return h1_tags, h1_len
 
@@ -201,6 +207,8 @@ class AuditSpider(CrawlSpider):
             href = f'{uri.scheme}://{uri.netloc}/{href[1:]}'
             href_domain = custom_cache_extract(url).registered_domain
             external = False
+        elif custom_cache_extract(href)[1] == custom_cache_extract(url)[1]:
+            href_domain = custom_cache_extract(url).registered_domain
         elif custom_cache_extract(href)[1] != custom_cache_extract(url)[1]:
             href_domain = custom_cache_extract(href).registered_domain
             external = True
@@ -252,8 +260,8 @@ class AuditSpider(CrawlSpider):
         n_grams = Counter(ngrams(tokens, n))
         n_grams_count = dict(n_grams.most_common(10))
         n_grams_count = {k[0]: v for (k, v) in n_grams_count.items()}
-        n_grams_json = json.dumps(n_grams_count)
-        return n_grams_json
+
+        return n_grams_count
 
     def parse_text(self, response):
         """
@@ -268,9 +276,6 @@ class AuditSpider(CrawlSpider):
         unigrams = self.n_grams(token_list, 1)
         bigrams = self.n_grams(token_list, 2)
         trigrams = self.n_grams(token_list, 3)
-        if response.headers.get('content-length'):
-            text_ratio = round(word_count / response.headers.get('content-length'), 2)
-        else:
-            text_ratio = 0.00
+        text_ratio = round(word_count / len(response.body), 2)
 
         return body_text, unigrams, bigrams, trigrams, word_count, text_ratio, content_hash

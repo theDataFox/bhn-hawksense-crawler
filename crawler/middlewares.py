@@ -5,8 +5,8 @@
 
 from scrapy import signals
 
-
 # useful for handling different item types with a single interface
+from itemadapter import is_item, ItemAdapter
 
 
 class CrawlerSpiderMiddleware:
@@ -29,7 +29,7 @@ class CrawlerSpiderMiddleware:
         return None
 
     def process_spider_output(self, response, result, spider):
-        # Called with the results returned from the AuditSpider, after
+        # Called with the results returned from the Spider, after
         # it has processed the response.
 
         # Must return an iterable of Request, or item objects.
@@ -53,7 +53,7 @@ class CrawlerSpiderMiddleware:
             yield r
 
     def spider_opened(self, spider):
-        spider.logger.info('AuditSpider opened: %s' % spider.name)
+        spider.logger.info('Spider opened: %s' % spider.name)
 
 
 class CrawlerDownloaderMiddleware:
@@ -100,41 +100,4 @@ class CrawlerDownloaderMiddleware:
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info('AuditSpider opened: %s' % spider.name)
-
-
-# settings.py
-
-DOWNLOADER_MIDDLEWARES = {
-    'myscraper.middlewares.DownloadTimer': 0,
-}
-# middlewares.py
-
-from time import time
-from scrapy.http import Response
-
-
-class DownloadTimer(object):
-    def process_request(self, request, spider):
-        request.meta['__start_time'] = time()
-        # this not block middlewares which are has greater number then this
-        return None
-
-    def process_response(self, request, response, spider):
-        request.meta['__end_time'] = time()
-        return response  # return response coz we should
-
-    def process_exception(self, request, exception, spider):
-        request.meta['__end_time'] = time()
-        return Response(
-            url=request.url,
-            status=110,
-            request=request)
-
-
-# inside spider.py in def parse(...
-
-log.msg('Download time: %.2f - %.2f = %.2f' % (
-    response.meta['__end_time'], response.meta['__start_time'],
-    response.meta['__end_time'] - response.meta['__start_time']
-), level=log.DEBUG)
+        spider.logger.info('Spider opened: %s' % spider.name)
