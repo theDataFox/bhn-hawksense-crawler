@@ -137,7 +137,7 @@ python-versions = "*"
 
 [[package]]
 name = "faker"
-version = "4.5.0"
+version = "4.9.0"
 description = "Faker is a Python package that generates fake data for you."
 category = "main"
 optional = false
@@ -499,52 +499,6 @@ fake-useragent = "*"
 faker = "*"
 
 [[package]]
-name = "scrapy-splash"
-version = "0.7.2"
-description = "JavaScript support for Scrapy using Splash"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.source]
-type = "git"
-url = 'https://github.com/scrapinghub/scrapy-splash.git'
-reference = 'master'
-resolved_reference = "ba6d7473bbad304cd93cdef55061f31ae641e766"
-
-[[package]]
-name = "scrapyd"
-version = "1.2.1"
-description = "A service for running Scrapy spiders, with an HTTP API"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-Scrapy = ">=1.0"
-six = "*"
-Twisted = ">=8.0"
-
-[[package]]
-name = "scrapyd-client"
-version = "1.2.0a1"
-description = "A client for scrapyd"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-requests = "*"
-Scrapy = ">=0.17"
-six = "*"
-
-[package.source]
-type = "git"
-url = 'https://github.com/scrapy/scrapyd-client.git'
-reference = 'master'
-resolved_reference = "4d839039ccd7b84997ba3fd533df313701b5ab68"
-
-[[package]]
 name = "scrapyrt"
 version = "0.11.0"
 description = "Put Scrapy spiders behind an HTTP API"
@@ -635,7 +589,7 @@ requests-file = ">=1.4"
 
 [[package]]
 name = "tqdm"
-version = "4.50.1"
+version = "4.50.2"
 description = "Fast, Extensible Progress Meter"
 category = "main"
 optional = false
@@ -728,7 +682,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "9f65d6cc22e81b7db6441eab4e91febd832db4189bf9d1b77841433b8fa4caa2"
+content-hash = "462b4c398b85f29b4bd26a09f65b1fa07c81baaf0871d6a8a5f79b9e796f26db"
 
 [metadata.files]
 alembic = [
@@ -836,8 +790,8 @@ fake-useragent = [
     {file = "fake-useragent-0.1.11.tar.gz", hash = "sha256:c104998b750eb097eefc28ae28e92d66397598d2cf41a31aa45d5559ef1adf35"},
 ]
 faker = [
-    {file = "Faker-4.5.0-py3-none-any.whl", hash = "sha256:ba4f98ed8c4c3e817c39626e996a913e3b6478b02625e1cfe9feb7fd8f2f4883"},
-    {file = "Faker-4.5.0.tar.gz", hash = "sha256:c7c7dcede34e10bfdb8601bea807bf065ec3dd3e90884aabcfd4e3f7ae2dbe3b"},
+    {file = "Faker-4.9.0-py3-none-any.whl", hash = "sha256:934660336924f4453733baebc74ad9c9b237155a17781990808c00801e63d557"},
+    {file = "Faker-4.9.0.tar.gz", hash = "sha256:5ca203eb9adaf6a9d1517a4d4a35a4d587f373639ed31da82b0f2e31abc2397a"},
 ]
 hyperlink = [
     {file = "hyperlink-20.0.1-py2.py3-none-any.whl", hash = "sha256:c528d405766f15a2c536230de7e160b65a08e20264d8891b3eb03307b0df3c63"},
@@ -1101,12 +1055,6 @@ scrapy-fake-useragent = [
     {file = "scrapy-fake-useragent-1.4.4.macosx-10.9-x86_64.tar.gz", hash = "sha256:3b17e982e646918dc25080da0672812d07bfb7a92a58377c014c74e0182c665e"},
     {file = "scrapy_fake_useragent-1.4.4-py2.py3-none-any.whl", hash = "sha256:da0589d9245fe6348b491821f3be3387dd6563540146058e6b6c4f1bbe1358bf"},
 ]
-scrapy-splash = []
-scrapyd = [
-    {file = "scrapyd-1.2.1-py2.py3-none-any.whl", hash = "sha256:7887b2b6d1d84291528cb65b6a2cce95d630e027c32330e72a5aa16710a6c3cb"},
-    {file = "scrapyd-1.2.1.tar.gz", hash = "sha256:9afff46957794618daea93046bca58576d06c1a32b290134c051235971c32a9c"},
-]
-scrapyd-client = []
 scrapyrt = []
 service-identity = [
     {file = "service_identity-18.1.0-py2.py3-none-any.whl", hash = "sha256:001c0707759cb3de7e49c078a7c0c9cd12594161d3bf06b9c254fdcb1a60dc36"},
@@ -1159,8 +1107,8 @@ tldextract = [
     {file = "tldextract-2.2.3.tar.gz", hash = "sha256:ab0e38977a129c72729476d5f8c85a8e1f8e49e9202e1db8dca76e95da7be9a8"},
 ]
 tqdm = [
-    {file = "tqdm-4.50.1-py2.py3-none-any.whl", hash = "sha256:5313148c57fcca7df562187903cf9cfa30fe1df2fe0641ea6ddb8ef9e841a137"},
-    {file = "tqdm-4.50.1.tar.gz", hash = "sha256:b04bbbc52a7f1e3665eaa310f34c6ebbdf058bd3f6251fd64c6ab831817121ea"},
+    {file = "tqdm-4.50.2-py2.py3-none-any.whl", hash = "sha256:43ca183da3367578ebf2f1c2e3111d51ea161ed1dc4e6345b86e27c2a93beff7"},
+    {file = "tqdm-4.50.2.tar.gz", hash = "sha256:69dfa6714dee976e2425a9aab84b622675b7b1742873041e3db8a8e86132a4af"},
 ]
 twisted = [
     {file = "Twisted-20.3.0-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:cdbc4c7f0cd7a2218b575844e970f05a1be1861c607b0e048c9bceca0c4d42f7"},

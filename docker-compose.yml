@@ -1,29 +1,25 @@
 # docker-compose up --build --no-cache
 # docker-compose up --build --force-recreate -d scrapyrt
 # cli docker exec -it b30c070f10e0 bash
-# alembic stamp head
-# alembic revision --autogenerate -m "comment"
+# docker exec -it <container_name> psql -U<user_name> -a <db_name>
+# docker exec -it <container_name> psql -U<user_name> -a <db_name> -c '<command/query>'
 version: "3.3"
 
 services:
   db:
-    container_name: "${POSTGRES_SERVER}"
-    image: library/postgres:11
+    container_name: hawksense-postgres
+    build:
+      context: .
+      dockerfile: postgres.dockerfile
     env_file:
       - .env
-    environment:
-      POSTGRES_DATABASE: "${POSTGRES_DB}"
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_PORT: "${POSTGRES_PORT}"
     ports:
       - "5432:5432"
     restart: always
     volumes:
-      - data:/var/lib/postgresql/data/ # persist data even if container shuts down
-      - ./scripts/db-init.sh:/docker-entrypoint-initdb.d/db-init.sh
+      - ./postgres-data:/var/lib/postgresql/data # persist data even if container shuts down
   pgadmin:
-    container_name: "${PGADMIN_NAME}"
+    container_name: hawksense-pgadmin
     image: dpage/pgadmin4
     networks:
       - default
@@ -33,12 +29,9 @@ services:
       - .env
     ports:
       - "5050:5050"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"
-      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"
 
   scrapyrt:
-    container_name: "${SCRAPYRT_NAME}"
+    container_name: hawksense-scrapyrt
     env_file:
       - .env
     build:
@@ -48,11 +41,7 @@ services:
     ports:
       - "9080:9080"
     volumes:
-      - .:/app
+      - ./app:/app
     depends_on:
       - db
     restart: unless-stopped
-
-#networks: for custom config
-volumes:
-  database-data: # named volumes can be managed easier using docker-compose

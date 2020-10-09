@@ -33,7 +33,9 @@ def get_url():
     password = os.getenv("POSTGRES_PASSWORD")
     server = os.getenv("POSTGRES_SERVER")
     db = os.getenv("POSTGRES_DB")
-    return f"postgresql://{user}:{password}@{server}/{db}"
+    driver = os.getenv("DATABASE_DRIVERNAME")
+
+    return f"{driver}://{user}:{password}@{server}/{db}"
 
 
 def run_migrations_offline():

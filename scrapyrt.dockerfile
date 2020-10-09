@@ -35,12 +35,20 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
     ln -s /opt/poetry/bin/poetry && \
     poetry config virtualenvs.create false
 
-COPY . /app
+RUN mkdir app/
 
-WORKDIR /app
+COPY ./app /app
+
+WORKDIR /app/
 
 RUN poetry install --no-root --no-dev
 
-ENV PYTHONPATH=/app
-CMD ["/bin/bash", "/app/docker-entrypoint.sh"]
+# set python path so alembic runs correctly but do not overwrite previous env variables set in docker compose
+#RUN export PYTHONPATH="$PYTHONPATH:/app"
+ENV PYTHONPATH="$PYTHONPATH:/app"
+
+RUN chmod +x scripts/alembic-init.sh
+# entrpoint only will work not RUN as this only works after build is complete
+CMD ["bash", "scripts/alembic-init.sh"]
+
 
