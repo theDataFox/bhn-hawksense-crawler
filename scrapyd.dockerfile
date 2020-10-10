@@ -43,12 +43,34 @@ WORKDIR /app/
 
 RUN poetry install --no-root --no-dev
 
+RUN python -m nltk.downloader punkt && python -m nltk.downloader stopwords
+#RUN [ "python", "-c", "import nltk; nltk.download('all')" ]
+
 # set python path so alembic runs correctly but do not overwrite previous env variables set in docker compose
 #RUN export PYTHONPATH="$PYTHONPATH:/app"
 ENV PYTHONPATH="$PYTHONPATH:/app"
 
-RUN chmod +x scripts/alembic-init.sh
+COPY ./app/scrapyd.conf /etc/scrapyd/
+VOLUME /etc/scrapyd/ /var/lib/scrapyd/
+EXPOSE 6800
+
+CMD ["scrapyd", "--pidfile="]
+
+#RUN chmod +x scripts/alembic-init.sh
 # entrpoint only will work not RUN as this only works after build is complete
-CMD ["bash", "scripts/alembic-init.sh"]
+#CMD ["bash", "scripts/alembic-init.sh"]
 
-
+#$ mkvirtualenv -p python3 webbot
+#$ pip install scrapy scrapyd-client
+#
+#$ scrapy startproject myproject
+#$ cd myproject
+#$ setvirtualenvproject
+#
+#$ scrapy genspider myspider mydomain.com
+#$ scrapy edit myspider
+#$ scrapy list
+#
+#$ vi scrapy.cfg
+#$ scrapyd-client deploy
+#$ curl http://localhost:6800/schedule.json -d project=myproject -d spider=myspider

@@ -499,6 +499,52 @@ fake-useragent = "*"
 faker = "*"
 
 [[package]]
+name = "scrapy-splash"
+version = "0.7.2"
+description = "JavaScript support for Scrapy using Splash"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "git"
+url = 'https://github.com/scrapinghub/scrapy-splash.git'
+reference = 'master'
+resolved_reference = "ba6d7473bbad304cd93cdef55061f31ae641e766"
+
+[[package]]
+name = "scrapyd"
+version = "1.2.1"
+description = "A service for running Scrapy spiders, with an HTTP API"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Scrapy = ">=1.0"
+six = "*"
+Twisted = ">=8.0"
+
+[[package]]
+name = "scrapyd-client"
+version = "1.2.0a1"
+description = "A client for scrapyd"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+requests = "*"
+Scrapy = ">=0.17"
+six = "*"
+
+[package.source]
+type = "git"
+url = 'https://github.com/scrapy/scrapyd-client.git'
+reference = 'master'
+resolved_reference = "4d839039ccd7b84997ba3fd533df313701b5ab68"
+
+[[package]]
 name = "scrapyrt"
 version = "0.11.0"
 description = "Put Scrapy spiders behind an HTTP API"
@@ -682,7 +728,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "462b4c398b85f29b4bd26a09f65b1fa07c81baaf0871d6a8a5f79b9e796f26db"
+content-hash = "9f65d6cc22e81b7db6441eab4e91febd832db4189bf9d1b77841433b8fa4caa2"
 
 [metadata.files]
 alembic = [
@@ -1055,6 +1101,12 @@ scrapy-fake-useragent = [
     {file = "scrapy-fake-useragent-1.4.4.macosx-10.9-x86_64.tar.gz", hash = "sha256:3b17e982e646918dc25080da0672812d07bfb7a92a58377c014c74e0182c665e"},
     {file = "scrapy_fake_useragent-1.4.4-py2.py3-none-any.whl", hash = "sha256:da0589d9245fe6348b491821f3be3387dd6563540146058e6b6c4f1bbe1358bf"},
 ]
+scrapy-splash = []
+scrapyd = [
+    {file = "scrapyd-1.2.1-py2.py3-none-any.whl", hash = "sha256:7887b2b6d1d84291528cb65b6a2cce95d630e027c32330e72a5aa16710a6c3cb"},
+    {file = "scrapyd-1.2.1.tar.gz", hash = "sha256:9afff46957794618daea93046bca58576d06c1a32b290134c051235971c32a9c"},
+]
+scrapyd-client = []
 scrapyrt = []
 service-identity = [
     {file = "service_identity-18.1.0-py2.py3-none-any.whl", hash = "sha256:001c0707759cb3de7e49c078a7c0c9cd12594161d3bf06b9c254fdcb1a60dc36"},

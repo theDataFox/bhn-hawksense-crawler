@@ -4,26 +4,25 @@
 Constructs the crawling AuditSpider class
 """
 import hashlib
+import logging
 import os
 import re
 import string
 from collections import Counter
 from urllib.parse import urlparse
 
-import nltk
 import tldextract
 import validators
 from PIL import ImageFont
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from nltk.util import ngrams
+from scrapy import signals
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
 from ..items import PageItem, ImageItem, OutLinkItem, CanonicalLinkItem
 
-nltk.download('stopwords')
-nltk.download('punkt')
 # define stop words
 stop_list = set(stopwords.words('english'))
 # define url validation
@@ -34,17 +33,20 @@ custom_cache_extract = tldextract.TLDExtract(cache_file=False)
 class AuditSpider(CrawlSpider):
     name = "AuditSpider"
 
-    def __init__(self, denied_paths, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        self.denied_paths = kwargs.get('denied_paths')
+        self.url = kwargs.get('url')
+        self.start_urls = [self.url]
         self.allowed_domains = [custom_cache_extract(self.start_urls[0]).registered_domain]
-        AuditSpider.rules = [Rule(LinkExtractor(deny=denied_paths), callback='parse_item', follow=True)]
-        super(AuditSpider, self)._compile_rules()
+        AuditSpider.rules = [Rule(LinkExtractor(deny=self.denied_paths), callback='parse_item', follow=True)]
+        # super(AuditSpider, self)._compile_rules()
+        # super().__init__(*args, **kwargs)
+        super(AuditSpider, self).__init__(*args, **kwargs)
 
     def parse_item(self, response):
         """
         Parses the scraped page
         """
-
         page_item = PageItem()
         url = response.url
         domain = custom_cache_extract(response.url).registered_domain
@@ -110,6 +112,19 @@ class AuditSpider(CrawlSpider):
             yield canonical_link_item
 
         yield page_item
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(AuditSpider, cls).from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_opened, signals.spider_opened)
+        crawler.signals.connect(spider.spider_closed, signals.spider_closed)
+        return spider
+
+    def spider_opened(self, spider):
+        logging.info(f'Opening {spider.name} spider')
+
+    def spider_closed(self, spider):
+        logging.info(f'Closing {spider.name} spider')
 
     @staticmethod
     def parse_url(response):
